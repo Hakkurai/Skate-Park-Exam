@@ -327,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1427108802}
-  offset: {x: 0, y: 5, z: -10}
+  offset: {x: 0, y: 5, z: -5}
   smoothSpeed: 0.125
 --- !u!1 &396210458
 GameObject:
@@ -566,7 +566,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 1b18b24513a34e545ab1f2e09ed962b0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
