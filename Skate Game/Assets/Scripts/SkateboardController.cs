@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class SkateboardController : MonoBehaviour
+public class SkateboardController : MonoBehaviour //scripting
 {
     public float speed = 10f;
     public float turnSpeed = 50f;
