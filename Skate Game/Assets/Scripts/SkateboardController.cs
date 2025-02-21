@@ -1,18 +1,24 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
-public class SkateboardController : MonoBehaviour //scripting
+public class SkateboardController : MonoBehaviour
 {
-    public float speed = 10f;
-    public float turnSpeed = 50f;
+    public float speed = 12f;
+    public float turnSpeed = 60f;
     public float jumpForce = 8f;
+    public float extraGravity = 20f;
+    public float rampForceMultiplier = 1.5f;
+    public float speedBoostAmount = 100f; // Boost amount
+    public float speedBoostDuration = 5f; // Boost lasts 5 seconds
     public Transform groundCheck;
-    public float groundCheckDistance = 0.5f;
+    public float groundCheckDistance = 0.6f;
     public LayerMask groundLayer;
-    public LayerMask slopeLayer; // Separate layer for slopes
-    public float slopeAdjustmentSpeed = 10f;
-    public float speedBoostAmount = 100f; // Extra speed added
-    public float speedBoostDuration = 5f; // Duration of boost
+    public LayerMask slopeLayer;
+    public float slopeAdjustmentSpeed = 12f;
+    public float maxTiltAngle = 30f;
+    public float antiTiltForce = 10f;
+    public float stabilizationForce = 500f;
+    public float slopeLandingForce = 5f; // Adjusts landing force on slopes
 
     private Rigidbody rb;
     private bool isGrounded;
@@ -24,6 +30,10 @@ public class SkateboardController : MonoBehaviour //scripting
     {
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0, -0.5f, 0);
+        rb.angularDamping = 15f;
+        rb.linearDamping = 0.2f;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
@@ -31,6 +41,8 @@ public class SkateboardController : MonoBehaviour //scripting
     {
         GroundCheck();
         MovePlayer();
+        ApplyExtraGravity();
+        ApplyStabilizationForces();
     }
 
     void Update()
@@ -51,44 +63,62 @@ public class SkateboardController : MonoBehaviour //scripting
         RaycastHit hit;
         if (Physics.Raycast(groundCheck.position, Vector3.down, out hit, groundCheckDistance))
         {
-            if (((1 << hit.collider.gameObject.layer) & groundLayer) != 0)
+            if (((1 << hit.collider.gameObject.layer) & groundLayer) != 0 || ((1 << hit.collider.gameObject.layer) & slopeLayer) != 0)
             {
                 isGrounded = true;
                 normalVector = hit.normal;
-            }
-            else if (((1 << hit.collider.gameObject.layer) & slopeLayer) != 0)
-            {
-                isOnSlope = true;
-                normalVector = hit.normal;
-                AdjustToSlope(normalVector);
+
+                if (((1 << hit.collider.gameObject.layer) & slopeLayer) != 0)
+                {
+                    isOnSlope = true;
+                    AdjustToSlope(normalVector);
+                }
             }
         }
     }
 
     void AdjustToSlope(Vector3 groundNormal)
     {
-        if (isOnSlope)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(transform.forward, groundNormal), groundNormal);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * slopeAdjustmentSpeed);
-        }
+        Quaternion targetRotation = Quaternion.FromToRotation(Vector3.up, groundNormal) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * slopeAdjustmentSpeed);
     }
 
     void MovePlayer()
     {
-        float currentSpeed = speed;
-
-        // If speed boost is active and Shift is held, apply the boost
-        if (isSpeedBoostActive && Input.GetKey(KeyCode.LeftShift))
-        {
-            currentSpeed += speedBoostAmount;
-        }
-
+        float currentSpeed = isSpeedBoostActive && Input.GetKey(KeyCode.LeftShift) ? speed + speedBoostAmount : speed;
         float moveInput = Input.GetAxis("Vertical") * currentSpeed;
         float turnInput = Input.GetAxis("Horizontal") * turnSpeed * Time.fixedDeltaTime;
 
-        rb.AddForce(transform.forward * moveInput, ForceMode.Acceleration);
+        Vector3 moveDirection;
+
+        if (isOnSlope)
+        {
+            moveDirection = Vector3.ProjectOnPlane(transform.forward, normalVector).normalized * rampForceMultiplier;
+        }
+        else
+        {
+            moveDirection = transform.forward;
+        }
+
+        rb.AddForce(moveDirection * moveInput, ForceMode.Acceleration);
         transform.Rotate(0, turnInput, 0);
+    }
+
+    void ApplyExtraGravity()
+    {
+        if (!isGrounded)
+        {
+            rb.AddForce(Vector3.down * extraGravity, ForceMode.Acceleration);
+        }
+    }
+
+    void ApplyStabilizationForces()
+    {
+        if (isGrounded)
+        {
+            Vector3 localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
+            rb.AddForce(-transform.right * localVelocity.x * stabilizationForce * Time.fixedDeltaTime, ForceMode.Force);
+        }
     }
 
     void Jump()
@@ -98,31 +128,27 @@ public class SkateboardController : MonoBehaviour //scripting
         isGrounded = false;
     }
 
+    // ✅ Fix for getting stuck when landing on slopes
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Slope"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Slope"))
         {
             isGrounded = true;
             rb.linearVelocity = Vector3.zero;
+
+            if (isOnSlope)
+            {
+                rb.AddForce(-normalVector * slopeLandingForce, ForceMode.Impulse);
+            }
         }
     }
 
-    void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Slope"))
-        {
-            isGrounded = false;
-            isOnSlope = false;
-        }
-    }
-
-    // ?? Speed Boost Activation
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("SpeedBoost"))
         {
             StartCoroutine(ActivateSpeedBoost());
-            Destroy(other.gameObject); // Remove the speed boost object from the scene
+            Destroy(other.gameObject);
         }
     }
 
@@ -135,5 +161,14 @@ public class SkateboardController : MonoBehaviour //scripting
 
         isSpeedBoostActive = false;
         Debug.Log("Speed Boost Ended.");
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Slope"))
+        {
+            isGrounded = false;
+            isOnSlope = false;
+        }
     }
 }
