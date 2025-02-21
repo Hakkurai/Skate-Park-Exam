@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class SkateboardController : MonoBehaviour
 {
@@ -10,10 +11,13 @@ public class SkateboardController : MonoBehaviour
     public LayerMask groundLayer;
     public LayerMask slopeLayer; // Separate layer for slopes
     public float slopeAdjustmentSpeed = 10f;
+    public float speedBoostAmount = 100f; // Extra speed added
+    public float speedBoostDuration = 5f; // Duration of boost
 
     private Rigidbody rb;
     private bool isGrounded;
     private bool isOnSlope;
+    private bool isSpeedBoostActive = false;
     private Vector3 normalVector = Vector3.up;
 
     void Start()
@@ -47,8 +51,6 @@ public class SkateboardController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(groundCheck.position, Vector3.down, out hit, groundCheckDistance))
         {
-            Debug.Log("Raycast Hit: " + hit.collider.name + " | Layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
-
             if (((1 << hit.collider.gameObject.layer) & groundLayer) != 0)
             {
                 isGrounded = true;
@@ -59,7 +61,6 @@ public class SkateboardController : MonoBehaviour
                 isOnSlope = true;
                 normalVector = hit.normal;
                 AdjustToSlope(normalVector);
-                Debug.Log("Board detected slope: Adjusting angle.");
             }
         }
     }
@@ -75,7 +76,15 @@ public class SkateboardController : MonoBehaviour
 
     void MovePlayer()
     {
-        float moveInput = Input.GetAxis("Vertical") * speed;
+        float currentSpeed = speed;
+
+        // If speed boost is active and Shift is held, apply the boost
+        if (isSpeedBoostActive && Input.GetKey(KeyCode.LeftShift))
+        {
+            currentSpeed += speedBoostAmount;
+        }
+
+        float moveInput = Input.GetAxis("Vertical") * currentSpeed;
         float turnInput = Input.GetAxis("Horizontal") * turnSpeed * Time.fixedDeltaTime;
 
         rb.AddForce(transform.forward * moveInput, ForceMode.Acceleration);
@@ -105,5 +114,26 @@ public class SkateboardController : MonoBehaviour
             isGrounded = false;
             isOnSlope = false;
         }
+    }
+
+    // ?? Speed Boost Activation
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("SpeedBoost"))
+        {
+            StartCoroutine(ActivateSpeedBoost());
+            Destroy(other.gameObject); // Remove the speed boost object from the scene
+        }
+    }
+
+    private IEnumerator ActivateSpeedBoost()
+    {
+        isSpeedBoostActive = true;
+        Debug.Log("Speed Boost Activated!");
+
+        yield return new WaitForSeconds(speedBoostDuration);
+
+        isSpeedBoostActive = false;
+        Debug.Log("Speed Boost Ended.");
     }
 }
