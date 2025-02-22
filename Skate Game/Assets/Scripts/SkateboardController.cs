@@ -8,6 +8,7 @@ public class SkateboardController : MonoBehaviour
     public float jumpForce = 10f;
     public float gravityMultiplier = 2f;
     public LayerMask groundLayer;
+
     private Rigidbody rb;
     private bool isGrounded;
 
@@ -30,7 +31,7 @@ public class SkateboardController : MonoBehaviour
 
         Vector3 forwardMove = transform.forward * move * Time.deltaTime;
         rb.MovePosition(rb.position + forwardMove);
-        
+
         transform.Rotate(Vector3.up, turn * Time.deltaTime);
     }
 
@@ -38,14 +39,19 @@ public class SkateboardController : MonoBehaviour
     {
         if (isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z); // Reset Y velocity to prevent weak jumps
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false; // Set to false immediately after jumping to prevent double jumps
         }
     }
 
     void CheckGrounded()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 1.2f, groundLayer))
+        float rayLength = 1.1f; // Shortened Raycast to avoid misdetection
+        Vector3 rayOrigin = transform.position + Vector3.up * 0.1f; // Offset to prevent clipping
+
+        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, groundLayer))
         {
             isGrounded = true;
             rb.linearDamping = 1f; // Add slight drag when grounded
@@ -56,6 +62,8 @@ public class SkateboardController : MonoBehaviour
             rb.linearDamping = 0f; // No drag in air
             rb.AddForce(Physics.gravity * gravityMultiplier, ForceMode.Acceleration);
         }
+
+        Debug.DrawRay(rayOrigin, Vector3.down * rayLength, isGrounded ? Color.green : Color.red);
     }
 
     void OnCollisionEnter(Collision collision)
