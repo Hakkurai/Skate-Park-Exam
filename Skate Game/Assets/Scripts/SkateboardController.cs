@@ -1,174 +1,94 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class SkateboardController : MonoBehaviour
 {
-    public float speed = 12f;
-    public float turnSpeed = 60f;
+    public float moveSpeed = 5f;
     public float jumpForce = 8f;
-    public float extraGravity = 20f;
-    public float rampForceMultiplier = 1.5f;
-    public float speedBoostAmount = 100f; // Boost amount
-    public float speedBoostDuration = 5f; // Boost lasts 5 seconds
-    public Transform groundCheck;
-    public float groundCheckDistance = 0.6f;
-    public LayerMask groundLayer;
-    public LayerMask slopeLayer;
-    public float slopeAdjustmentSpeed = 12f;
-    public float maxTiltAngle = 30f;
-    public float antiTiltForce = 10f;
-    public float stabilizationForce = 500f;
-    public float slopeLandingForce = 5f; // Adjusts landing force on slopes
+    public float gravity = 9.81f;
+    public float rotationSpeed = 10f;
+    public float slopeForce = 10f;
+    public float slopeRaycastLength = 2f; // Increased raycast length for better slope detection
 
-    private Rigidbody rb;
+    private CharacterController controller;
+    private Vector3 moveDirection;
     private bool isGrounded;
-    private bool isOnSlope;
-    private bool isSpeedBoostActive = false;
-    private Vector3 normalVector = Vector3.up;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.centerOfMass = new Vector3(0, -0.5f, 0);
-        rb.angularDamping = 15f;
-        rb.linearDamping = 0.2f;
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-    }
-
-    void FixedUpdate()
-    {
-        GroundCheck();
-        MovePlayer();
-        ApplyExtraGravity();
-        ApplyStabilizationForces();
+        controller = GetComponent<CharacterController>();
+        controller.slopeLimit = 45f;
+        controller.stepOffset = 0.3f;
     }
 
     void Update()
     {
-        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
+        isGrounded = controller.isGrounded;
+
+        // Get input
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+
+        // Convert movement to be relative to the player's forward direction
+        Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        if (move.magnitude > 1) move.Normalize();
+
+        // Apply movement speed
+        moveDirection.x = move.x * moveSpeed;
+        moveDirection.z = move.z * moveSpeed;
+
+        // Adjust movement and rotation based on slope
+        AlignToSlope();
+
+        // Rotate player towards movement direction smoothly
+        if (move.magnitude > 0)
         {
-            Jump();
+            Quaternion targetRotation = Quaternion.LookRotation(move);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
-    }
 
-    void GroundCheck()
-    {
-        isGrounded = false;
-        isOnSlope = false;
-
-        Debug.DrawRay(groundCheck.position, Vector3.down * groundCheckDistance, Color.red);
-
-        RaycastHit hit;
-        if (Physics.Raycast(groundCheck.position, Vector3.down, out hit, groundCheckDistance))
+        // Jump logic: Allow jumping only when grounded
+        if (isGrounded)
         {
-            if (((1 << hit.collider.gameObject.layer) & groundLayer) != 0 || ((1 << hit.collider.gameObject.layer) & slopeLayer) != 0)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                isGrounded = true;
-                normalVector = hit.normal;
-
-                if (((1 << hit.collider.gameObject.layer) & slopeLayer) != 0)
-                {
-                    isOnSlope = true;
-                    AdjustToSlope(normalVector);
-                }
+                moveDirection.y = jumpForce;
             }
-        }
-    }
-
-    void AdjustToSlope(Vector3 groundNormal)
-    {
-        Quaternion targetRotation = Quaternion.FromToRotation(Vector3.up, groundNormal) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * slopeAdjustmentSpeed);
-    }
-
-    void MovePlayer()
-    {
-        float currentSpeed = isSpeedBoostActive && Input.GetKey(KeyCode.LeftShift) ? speed + speedBoostAmount : speed;
-        float moveInput = Input.GetAxis("Vertical") * currentSpeed;
-        float turnInput = Input.GetAxis("Horizontal") * turnSpeed * Time.fixedDeltaTime;
-
-        Vector3 moveDirection;
-
-        if (isOnSlope)
-        {
-            moveDirection = Vector3.ProjectOnPlane(transform.forward, normalVector).normalized * rampForceMultiplier;
+            else
+            {
+                moveDirection.y = -1f;
+            }
         }
         else
         {
-            moveDirection = transform.forward;
+            moveDirection.y -= gravity * Time.deltaTime;
         }
 
-        rb.AddForce(moveDirection * moveInput, ForceMode.Acceleration);
-        transform.Rotate(0, turnInput, 0);
+        // Move the character
+        controller.Move(moveDirection * Time.deltaTime);
     }
 
-    void ApplyExtraGravity()
+    void AlignToSlope()
     {
-        if (!isGrounded)
+        if (!isGrounded) return;
+
+        RaycastHit hit;
+        Vector3 rayOrigin = transform.position + Vector3.up * 0.1f; // Ensure ray starts above the ground
+        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, slopeRaycastLength))
         {
-            rb.AddForce(Vector3.down * extraGravity, ForceMode.Acceleration);
-        }
-    }
+            float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
 
-    void ApplyStabilizationForces()
-    {
-        if (isGrounded)
-        {
-            Vector3 localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
-            rb.AddForce(-transform.right * localVelocity.x * stabilizationForce * Time.fixedDeltaTime, ForceMode.Force);
-        }
-    }
-
-    void Jump()
-    {
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        isGrounded = false;
-    }
-
-    // ✅ Fix for getting stuck when landing on slopes
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Slope"))
-        {
-            isGrounded = true;
-            rb.linearVelocity = Vector3.zero;
-
-            if (isOnSlope)
+            // Check if the player is on a slope but within limits
+            if (slopeAngle > 0 && slopeAngle < controller.slopeLimit)
             {
-                rb.AddForce(-normalVector * slopeLandingForce, ForceMode.Impulse);
+                Quaternion slopeRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                transform.rotation = Quaternion.Slerp(transform.rotation, slopeRotation, Time.deltaTime * rotationSpeed);
+
+                // Apply extra force to help the player clear the slope
+                if (moveDirection.z > 0) // Moving forward
+                {
+                    moveDirection += hit.normal * (slopeForce * Time.deltaTime);
+                }
             }
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("SpeedBoost"))
-        {
-            StartCoroutine(ActivateSpeedBoost());
-            Destroy(other.gameObject);
-        }
-    }
-
-    private IEnumerator ActivateSpeedBoost()
-    {
-        isSpeedBoostActive = true;
-        Debug.Log("Speed Boost Activated!");
-
-        yield return new WaitForSeconds(speedBoostDuration);
-
-        isSpeedBoostActive = false;
-        Debug.Log("Speed Boost Ended.");
-    }
-
-    void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") || collision.gameObject.layer == LayerMask.NameToLayer("Slope"))
-        {
-            isGrounded = false;
-            isOnSlope = false;
         }
     }
 }

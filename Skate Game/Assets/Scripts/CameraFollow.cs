@@ -1,35 +1,45 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class FollowCamera : MonoBehaviour
+public class CameraFollow : MonoBehaviour
 {
-    public Transform target;  // Reference to the skateboard (player)
-    public Vector3 offset = new Vector3(1, 1.2f, -3);  // Camera offset
-    public float smoothSpeed = 0.125f;  // Camera follow smoothness
-    public float rotationSmoothSpeed = 5f; // Camera rotation smoothness
+    private Transform player; // Automatically assigned
+    public Vector3 offset = new Vector3(0, 3, -5); // Adjustable offset
+    public float smoothSpeed = 5f;
 
     void Start()
     {
-        if (target == null)
-        {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
-            {
-                target = playerObj.transform;
-            }
-        }
+        FindPlayer();
     }
 
     void LateUpdate()
     {
-        if (target == null) return;
+        if (player == null)
+        {
+            FindPlayer();
+            if (player == null) return; // If still null, exit
+        }
 
-        // Calculate new camera position based on player position
-        Vector3 desiredPosition = target.position + target.rotation * offset;
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothedPosition;
+        FollowPlayer();
+    }
 
-        // Smoothly rotate the camera to match the player's direction
-        Quaternion targetRotation = Quaternion.LookRotation(target.position - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothSpeed);
+    void FindPlayer()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+        }
+    }
+
+    void FollowPlayer()
+    {
+        // Target position based on player's rotation and offset
+        Vector3 targetPosition = player.position + player.rotation * offset;
+
+        // Smoothly interpolate position
+        transform.position = Vector3.Lerp(transform.position, targetPosition, smoothSpeed * Time.deltaTime);
+
+        // Ensure the camera always looks at the player
+        transform.LookAt(player.position + Vector3.up * 1.5f);
     }
 }

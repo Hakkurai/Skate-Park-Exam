@@ -6,11 +6,12 @@ TagManager:
   tags:
   - Ground
   - SpeedBoost
+  - Slope
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - GroundLayer
+  - Ground
   - Water
   - UI
   - Slope
