@@ -551,6 +551,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Structure_Kitchen_Cabinet_Base_Full (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 883d51e7e239f54419933f9cb946e7cc, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1103,9 +1107,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8603339840771121511, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -6706838754529431036, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 524963029816909353, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
       propertyPath: m_Name
       value: Structure_Kitchen_Cabinet_Base_Corner
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
+    - target: {fileID: 2168271938362447112, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2168976252407219861, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2168976252407219861, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526933834787328523, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
