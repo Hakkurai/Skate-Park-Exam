@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4542823443957352895}
   - component: {fileID: 1796846725352521077}
   - component: {fileID: 4119676692751281011}
+  - component: {fileID: 5167387144867119516}
   - component: {fileID: 5908791205802527959}
   - component: {fileID: 7767987635853565511}
   m_Layer: 0
@@ -109,6 +110,22 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 136
+--- !u!114 &5167387144867119516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283536439325121696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a090fd390acfa24d9e3b4a235788f07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxNitrous: 100
+  nitrousDrainRate: 20
+  speedBoostMultiplier: 2
+  nitrousText: {fileID: 0}
 --- !u!64 &5908791205802527959
 MeshCollider:
   m_ObjectHideFlags: 0

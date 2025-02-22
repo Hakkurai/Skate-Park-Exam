@@ -472,11 +472,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1595747635}
   m_SourcePrefab: {fileID: 100100000, guid: 8d2014b94abd21945b469218a6ef604d, type: 3}
---- !u!1 &294827382 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 283536439325121696, guid: b7cd8039ce37727439aa2a6dea5dd97f, type: 3}
-  m_PrefabInstance: {fileID: 6023966702941392375}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &309890135 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 14d542db84097c045a31bccb8cc91061, type: 3}
@@ -895,22 +890,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 622765925110253082, guid: b7cd8039ce37727439aa2a6dea5dd97f, type: 3}
   m_PrefabInstance: {fileID: 6023966702941392375}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &675212274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 294827382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a090fd390acfa24d9e3b4a235788f07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxNitrous: 100
-  nitrousDrainRate: 20
-  speedBoostMultiplier: 2
-  nitrousText: {fileID: 9392568}
 --- !u!1 &820252756
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,10 +1373,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Consumable2
       objectReference: {fileID: 0}
-    - target: {fileID: 6593332532483996117, guid: ce392208671be844390198c22faed467, type: 3}
-      propertyPath: m_TagString
-      value: Untagged
-      objectReference: {fileID: 0}
     - target: {fileID: 7541873991664062585, guid: ce392208671be844390198c22faed467, type: 3}
       propertyPath: m_LocalPosition.x
       value: 24.949717
@@ -1441,28 +1416,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6593332532483996117, guid: ce392208671be844390198c22faed467, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1530889759}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce392208671be844390198c22faed467, type: 3}
---- !u!1 &1530889753 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6593332532483996117, guid: ce392208671be844390198c22faed467, type: 3}
-  m_PrefabInstance: {fileID: 1530889752}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1530889759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1530889753}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28cf244aa5b090c4a84abc6d57ab7123, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1540078858 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 8d2014b94abd21945b469218a6ef604d, type: 3}
@@ -1960,13 +1915,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5167387144867119516, guid: b7cd8039ce37727439aa2a6dea5dd97f, type: 3}
+      propertyPath: nitrousText
+      value: 
+      objectReference: {fileID: 9392568}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 283536439325121696, guid: b7cd8039ce37727439aa2a6dea5dd97f, type: 3}
-      insertIndex: 4
-      addedObject: {fileID: 675212274}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7cd8039ce37727439aa2a6dea5dd97f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
