@@ -48,7 +48,7 @@ public class NitrousBoost : MonoBehaviour
         }
 
         // Debug log with percentage meter
-        Debug.Log("Nitrous Level: " + Mathf.Round((currentNitrous / maxNitrous) * 100) + "%");
+        //Debug.Log("Nitrous Level: " + Mathf.Round((currentNitrous / maxNitrous) * 100) + "%");
     }
 
     void ActivateBoost()
