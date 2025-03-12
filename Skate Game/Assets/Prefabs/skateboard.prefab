@@ -103,13 +103,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e432fc66da8e61e4db0c04732bf1e940, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  moveSpeed: 10
   turnSpeed: 50
   jumpForce: 5
+  doubleJumpMultiplier: 1.5
   gravityMultiplier: 2
+  fallMultiplier: 2
+  rampStickForce: 20
   groundLayer:
     serializedVersion: 2
     m_Bits: 136
+  rampLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &5167387144867119516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxNitrous: 100
-  nitrousDrainRate: 20
+  nitrousDrainRate: 0
   speedBoostMultiplier: 2
   nitrousText: {fileID: 0}
 --- !u!64 &5908791205802527959
@@ -621,9 +627,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4707775508198880569}
+  - component: {fileID: 8502645266118347988}
   m_Layer: 0
   m_Name: character-skate-boy
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -644,6 +651,27 @@ Transform:
   - {fileID: 8884874887324827309}
   m_Father: {fileID: 622765925110253082}
   m_LocalEulerAnglesHint: {x: 0, y: -92.57, z: 0}
+--- !u!65 &8502645266118347988
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5340900054390157187}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.60576683, y: 0.71555555, z: 0.43521792}
+  m_Center: {x: 0, y: 0.36197662, z: 0}
 --- !u!1 &5500330429825167762
 GameObject:
   m_ObjectHideFlags: 0

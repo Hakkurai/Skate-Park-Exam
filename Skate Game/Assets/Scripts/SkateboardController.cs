@@ -1,16 +1,21 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SkateboardController : MonoBehaviour
 {
     public float moveSpeed = 10f;
     public float turnSpeed = 50f;
     public float jumpForce = 10f;
-    public float gravityMultiplier = 2f;
+    public float doubleJumpMultiplier = 1.5f;
+    public float gravityMultiplier = 2.5f;
+    public float fallMultiplier = 2f;
+    public float rampStickForce = 20f; // Force to keep skateboard on ramp
     public LayerMask groundLayer;
+    public LayerMask rampLayer;
 
     private Rigidbody rb;
     private bool isGrounded;
+    private bool isOnRamp;
+    private int jumpCount = 0;
 
     void Start()
     {
@@ -22,6 +27,7 @@ public class SkateboardController : MonoBehaviour
         HandleMovement();
         CheckGrounded();
         HandleJump();
+        ApplyExtraGravity();
     }
 
     void HandleMovement()
@@ -35,77 +41,76 @@ public class SkateboardController : MonoBehaviour
         transform.Rotate(Vector3.up, turn * Time.deltaTime);
     }
 
-    private int jumpCount = 0; // Tracks jumps (0 = grounded, 1 = first jump, 2 = double jump)
-
-    private bool isFirstJump = true; // Tracks if this is the player's first jump ever
-
     void HandleJump()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (isGrounded) // Normal ground jump
-            {
-                rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z); // Reset Y velocity
-
-                // Apply normal jump for the first-ever jump, stronger after that
-                float jumpPower = isFirstJump ? jumpForce : jumpForce * 1.2f;
-                rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
-
-                isFirstJump = false; // Mark that the player has now jumped at least once
-                jumpCount = 1; // First jump performed
-
-                Debug.Log(isFirstJump ? "Player's Initial Jump" : "Player Jumped with Slight Boost");
-            }
-            else if (jumpCount == 1) // Double jump
+            if (isGrounded || jumpCount < 2)
             {
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-                rb.AddForce(Vector3.up * jumpForce * 1.5f, ForceMode.Impulse); // 1.5x stronger double jump
-                jumpCount++;
 
-                Debug.Log("Player Double Jumped with Extra Force!");
+                float jumpPower = (jumpCount == 1) ? jumpForce * doubleJumpMultiplier + 2f : jumpForce;
+                rb.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+                
+                jumpCount++;
+                isGrounded = false;
+                isOnRamp = false;
+                Debug.Log(jumpCount == 1 ? "Player Jumped" : "Player Double Jumped with Extra Speed!");
             }
         }
     }
 
-
-
+    void ApplyExtraGravity()
+    {
+        if (!isGrounded && rb.linearVelocity.y < 0)
+        {
+            rb.AddForce(Vector3.down * gravityMultiplier * fallMultiplier, ForceMode.Acceleration);
+        }
+    }
 
     void CheckGrounded()
     {
         RaycastHit hit;
-        float rayLength = 1f; // Shortened Raycast to avoid misdetection
-        Vector3 rayOrigin = transform.position + Vector3.up * 0.1f; // Offset to prevent clipping
+        float rayLength = 1f;
+        Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
 
-        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, groundLayer))
+        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, rayLength, groundLayer | rampLayer))
         {
-            if (!isGrounded) // Only reset when touching the ground for the first time
+            if (!isGrounded)
             {
-                jumpCount = 0; // Reset jump count when landing
+                jumpCount = 0;
                 Debug.Log("Jump count reset");
             }
-
             isGrounded = true;
-            rb.linearDamping = 1f; // Add slight drag when grounded
-            Debug.Log("Player is Grounded");
+            isOnRamp = (rampLayer & (1 << hit.collider.gameObject.layer)) != 0;
         }
         else
         {
             isGrounded = false;
-            rb.linearDamping = 0f; // No drag in air
-            rb.AddForce(Physics.gravity * gravityMultiplier, ForceMode.Acceleration);
-            Debug.Log("Player is Airborne");
+            isOnRamp = false;
+        }
+
+        if (isOnRamp)
+        {
+            Vector3 rampNormal = hit.normal;
+            rb.AddForce(-rampNormal * rampStickForce, ForceMode.Acceleration);
         }
 
         Debug.DrawRay(rayOrigin, Vector3.down * rayLength, isGrounded ? Color.green : Color.red);
     }
 
-
-
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ramp"))
         {
-            rb.linearDamping = 0.1f; // Reduce friction on ramps for smooth sliding
+            rb.linearDamping = 0.1f;
+            isOnRamp = true;
+        }
+        else if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
+        {
+            isGrounded = true;
+            jumpCount = 0;
+            isOnRamp = false;
         }
     }
 
@@ -113,7 +118,8 @@ public class SkateboardController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ramp"))
         {
-            rb.linearDamping = 1f; // Reset drag when leaving the ramp
+            rb.linearDamping = 1f;
+            isOnRamp = false;
         }
     }
 }
