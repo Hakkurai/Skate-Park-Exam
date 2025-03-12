@@ -28,6 +28,7 @@ public class SkateboardController : MonoBehaviour
         CheckGrounded();
         HandleJump();
         ApplyExtraGravity();
+        HandleReset();
     }
 
     void HandleMovement()
@@ -57,6 +58,15 @@ public class SkateboardController : MonoBehaviour
                 isOnRamp = false;
                 Debug.Log(jumpCount == 1 ? "Player Jumped" : "Player Double Jumped with Extra Speed!");
             }
+        }
+    }
+    void HandleReset()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            rb.angularVelocity = Vector3.zero; // Stops any spinning
+            Debug.Log("Player Reset Rotation");
         }
     }
 
