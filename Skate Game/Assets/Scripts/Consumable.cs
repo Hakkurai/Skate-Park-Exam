@@ -3,28 +3,26 @@ using TMPro;
 
 public class Consumable : MonoBehaviour
 {
-    public int points = 10; // The points added per collection
-    private static int score = 0; // Keeps track of score
-    public TextMeshProUGUI scoreText; // Reference to the UI text
+    public int points = 10; // Points per consumable
+    public TextMeshProUGUI scoreText; // Reference to UI text
 
     private void Start()
     {
-        // Find the TextMeshPro UI in the scene if not assigned
+        // Automatically find the UI text if not assigned
         if (scoreText == null)
         {
             scoreText = GameObject.Find("ScoreText").GetComponent<TextMeshProUGUI>();
         }
-
         UpdateScoreUI();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) // Make sure player has a tag "Player"
+        if (other.CompareTag("Player"))
         {
-            score += points; // Add 10 points
+            WinTrigger.levelScore += points; // Update global level score
             UpdateScoreUI();
-            Destroy(gameObject); // Destroy the consumable
+            Destroy(gameObject);
         }
     }
 
@@ -32,7 +30,7 @@ public class Consumable : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + score;
+            scoreText.text = "Score: " + WinTrigger.levelScore; // Use static score
         }
     }
 }
