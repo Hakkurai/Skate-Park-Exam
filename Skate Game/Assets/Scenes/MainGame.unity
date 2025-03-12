@@ -495,11 +495,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7307874048336627655, guid: d66083e03bd86a64e880882538ba24fb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.62
+      value: 8.36
       objectReference: {fileID: 0}
     - target: {fileID: 7307874048336627655, guid: d66083e03bd86a64e880882538ba24fb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -39.836
+      value: -42.6
       objectReference: {fileID: 0}
     - target: {fileID: 7307874048336627655, guid: d66083e03bd86a64e880882538ba24fb, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3669,11 +3669,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7307874048336627655, guid: d66083e03bd86a64e880882538ba24fb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.4352083
+      value: 6.45
       objectReference: {fileID: 0}
     - target: {fileID: 7307874048336627655, guid: d66083e03bd86a64e880882538ba24fb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -54.09
+      value: -54.05
       objectReference: {fileID: 0}
     - target: {fileID: 7307874048336627655, guid: d66083e03bd86a64e880882538ba24fb, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3873,6 +3873,7 @@ GameObject:
   - component: {fileID: 1959469858}
   - component: {fileID: 1959469857}
   - component: {fileID: 1959469861}
+  - component: {fileID: 1959469862}
   m_Layer: 0
   m_Name: Lava
   m_TagString: Untagged
@@ -3897,7 +3898,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -3991,6 +3992,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   winSceneName: Win_1
+--- !u!65 &1959469862
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1959469856}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 9.999999, y: 2.2204459e-16, z: 9.999999}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2058454800 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2168976252407219861, guid: 948d7c3ab5b10b84983e22ac4e1bb3e4, type: 3}
@@ -4151,9 +4173,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 14.858
       objectReference: {fileID: 0}
+    - target: {fileID: -8603339840771121511, guid: aa7df75da0afa864b86cfd8282451c29, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: aa7df75da0afa864b86cfd8282451c29, type: 3}
       propertyPath: m_Name
       value: Prop_Dining_Room_Table_Modular_Corner
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: aa7df75da0afa864b86cfd8282451c29, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: aa7df75da0afa864b86cfd8282451c29, type: 3}
+      propertyPath: m_TagString
+      value: Ramp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -113,7 +113,7 @@ public class SkateboardController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ramp"))
         {
-            rb.linearDamping = 0.1f;
+            rb.linearDamping = 1;
             isOnRamp = true;
         }
         else if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
